@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Employee>
+
+@{ 
+
+    ViewBag.Title = "Employee List";
+}
+
+            <div class="card-deck">
+                @foreach (var employee in Model)
+                {
+                    <div class="card m-3">
+                        <div class="card-header">
+                            <h3>@employee.Name</h3>
+
+
+
+                        </div>
+                        <img class="card-img-top" src="~/images/cover.jpg" asp-append-version="true"/>
+                        <div class="card-footer text-center">
+
+                            @*asp-append-version="true" Sprawdza czy zmienilismy obraz wykorzystany na stronie
+                            jesli tak to rekalkuluje stringa dopisanego do nazwy zdjecia i wrzuca nowe zdjecie*@
+
+                            @*Tag helper jest najlepszy, bo nie zmieni sie wraz ze zmiana sciezki poczatkowej*@
+                            @*Tag helper*@
+                            <a asp-controller="home" asp-action="details" asp-route-id="@employee.Id"
+                               class="btn btn-primary m-1">View</a>
+                            <!--Inny sposob rozwiazania problemu-->
+                            @*<a href="home/details/@employee.Id">Id</a>*@
+
+                            @*<a href="@Url.Action("details", "home", new {id=employee.Id})"
+           class="btn btn-primary">Show</a>
+
+        @Html.ActionLink("View","details","home", new {id =employee.Id })*@
+
+
+                            <a href="#" class="btn btn-primary m-1">Edit</a>
+                            <a href="#" class="btn btn-danger m-1">Delete</a>
+
+
+                        </div>
+
+
+
+                    </div>
+
+                }
+
+
+            </div>
+

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\1.jpg" />
+    <Content Remove="wwwroot\2.jpg" />
+    <Content Remove="wwwroot\3.jpeg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\images\1.jpg" />
+    <None Include="wwwroot\images\2.jpg" />
+    <None Include="wwwroot\images\3.jpeg" />
+  </ItemGroup>
+
+</Project>
