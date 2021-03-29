@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,21 +29,26 @@ namespace EmployeManagment
         public void ConfigureServices(IServiceCollection services)
         {
 
+            //services.AddDbContextPool<AppDbContext>(
+            //    options => options.UseSqlServer(_config.GetConnectionString("EmployeeDbConnection")));
+
+            services.AddDbContextPool<AppDbContext>(
+             options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
 
             services.AddMvcCore(options=>options.EnableEndpointRouting=false).AddXmlSerializerFormatters();
 
             //Singleton Instancja obiektu tworzona tylko raz a potem pracujemy na tym samym obiekcie
             // Ilosc uzytkownikow dowolna
-            services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
+            //services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
 
             // Instancja tworzona raz na zadanie w tym zakresie  jak singleton w jednym zakresie.
             // Tworzy jeden obiekt dla  żądania http i uzywa go do w innych wywolaniach, nastepne wyslanie
             //zadania stworzy jednak nowy obiekt
             //obiekt (max 4, potem sie zeruje)
-            //services.AddScoped<IEmployeeRepository, MockEmployeeRepository>();
+            services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
 
             //nowy obiekt jest tworzony zawsze kiedy zostaje wysylane zapytanie http(zawsze 3)
-            //services.AddTransient<IEmployeeRepository, MockEmployeeRepository>();
+            //services.AddTransient<IEmployeeRepository, SQLEmployeeRepository>();
 
             services.AddControllersWithViews(); // for views 
         }
