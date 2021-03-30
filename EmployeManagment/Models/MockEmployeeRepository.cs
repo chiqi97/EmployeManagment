@@ -56,6 +56,7 @@ namespace EmployeManagment.Models
                 employee.Name = employeeChanges.Name;
                 employee.Email = employeeChanges.Email;
                 employee.Department = employeeChanges.Department;
+               // employee.PhotoPath = employeeChanges.PhotoPath;
             }
             return employee;
         }

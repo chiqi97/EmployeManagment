@@ -22,6 +22,6 @@ namespace EmployeManagment.ViewModels
         //znak zapytania mowi, ze enum dept jest opcjonalny
         public Dept? Department { get; set; }
         //Typ pozwalajacy na odczytywanie zdjec
-        public List<IFormFile> Photos { get; set; }
+        public IFormFile Photo { get; set; }
     }
 }

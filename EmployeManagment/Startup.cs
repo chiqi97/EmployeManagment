@@ -65,6 +65,14 @@ namespace EmployeManagment
                 //};
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Error"); 
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
+            }
+                
+
 
             //change name of default page
             //DefaultFilesOptions defaultFileOptions = new DefaultFilesOptions();
