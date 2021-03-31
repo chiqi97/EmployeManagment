@@ -47,7 +47,7 @@ namespace EmployeManagment.Controllers
         //[Route("{id?}")]
         public ViewResult Details(int? id )
         {
-            throw new Exception();
+          // throw new Exception();
             //Employee model = _employeeRepository.GetEmployee(1);
             //ViewData["Employee"] = model;
             //ViewData["PageTitle"] = "Employee Details";
@@ -169,5 +169,6 @@ namespace EmployeManagment.Controllers
             return uniqueFileName;
             
         }
+
     }
 }

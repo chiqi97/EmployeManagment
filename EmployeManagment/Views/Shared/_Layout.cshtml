@@ -41,7 +41,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
          
-        <div class="collapse navbar-collapse"id="collapsibleNavbar">
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a asp-action="index" asp-controller="home" class="nav-link">List</a>
@@ -52,6 +52,14 @@
                 </li>
 
 
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="account" asp-action="register">
+                        Register
+                    </a>
+                </li>
             </ul>
         </div>
 

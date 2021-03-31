@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +36,10 @@ namespace EmployeManagment
             services.AddDbContextPool<AppDbContext>(
              options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
 
+            // identity service
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                    .AddEntityFrameworkStores<AppDbContext>();
+
             services.AddMvcCore(options=>options.EnableEndpointRouting=false).AddXmlSerializerFormatters();
 
             //Singleton Instancja obiektu tworzona tylko raz a potem pracujemy na tym samym obiekcie
@@ -44,7 +49,7 @@ namespace EmployeManagment
             // Instancja tworzona raz na zadanie w tym zakresie  jak singleton w jednym zakresie.
             // Tworzy jeden obiekt dla  żądania http i uzywa go do w innych wywolaniach, nastepne wyslanie
             //zadania stworzy jednak nowy obiekt
-            //obiekt (max 4, potem sie zeruje)
+            //obiekt (max 4, potem sie zeruje) przyklad z filmu
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
 
             //nowy obiekt jest tworzony zawsze kiedy zostaje wysylane zapytanie http(zawsze 3)
@@ -95,6 +100,11 @@ namespace EmployeManagment
 
             // konfiguruje domyslna sciezke czyli HomeController i metoda details > /home/details
             //  app.UseMvcWithDefaultRoute();
+
+            //Autthentication middleware, koniecznie przed mvc, nalezy pierw w metodzie on modelCreating w 
+            //AppDbContext dodac, ze wykorzystujemy base.onmodelCreating(modelBuilder) a kolejno mozemy dodac
+            // migracje
+            app.UseAuthentication();
 
             // Domyslna sciezka taka jak dla komendy DefauultRoute przypisanie home i index wlacza domyslnie sciezke
             // Home/index po wlaczeniu programu
