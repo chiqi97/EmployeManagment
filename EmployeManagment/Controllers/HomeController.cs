@@ -12,8 +12,7 @@ using System.Threading.Tasks;
 namespace EmployeManagment.Controllers
 {
     
-    // ustawienia sciezki, najlepsze poniewaz gdy zmienimy nazwe nie musimy nic zmieniac
-    //[Route("[controller]/[action]")]
+
     public class HomeController:Controller
     {
         private readonly IWebHostEnvironment _hostingEnvironment;
@@ -25,32 +24,14 @@ namespace EmployeManagment.Controllers
             _hostingEnvironment = hostingEnviroment;
             _employeeRepository = employeeRepository;
         }
-        //public string Index()
-        //{
-
-
-
-        //    return _employeeRepository.GetEmployee(2).Name;
-        //}
-        // ustawienia sciezki 
-        //[Route("")]
-        //[Route("~/")]
-        //[Route("/pragim")]
-
         public ViewResult Index()
         {
             var model = _employeeRepository.GetAllEmployee();
             return View(model);
         }
-
-        //Znaki zaptania = jesli null to podaj do id 1
-        //[Route("{id?}")]
         public ViewResult Details(int? id )
         {
-          // throw new Exception();
-            //Employee model = _employeeRepository.GetEmployee(1);
-            //ViewData["Employee"] = model;
-            //ViewData["PageTitle"] = "Employee Details";
+
             Employee employee = _employeeRepository.GetEmployee(id.Value);
 
             if (employee == null)
