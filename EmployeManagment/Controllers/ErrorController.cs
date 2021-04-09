@@ -19,6 +19,7 @@ namespace EmployeManagment.Controllers
         }
 
         [Route ("Error/{statusCode}")]
+        [AllowAnonymous]
         public IActionResult HttpStatusCodeHandler(int statusCode)
         {
             var statusCodeResult = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();

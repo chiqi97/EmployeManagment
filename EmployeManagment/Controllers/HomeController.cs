@@ -1,5 +1,6 @@
 ﻿using EmployeManagment.Models;
 using EmployeManagment.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ namespace EmployeManagment.Controllers
             _hostingEnvironment = hostingEnviroment;
             _employeeRepository = employeeRepository;
         }
+        [AllowAnonymous] // pozwol uzytkownikom niezalogowanym
         public ViewResult Index()
         {
             var model = _employeeRepository.GetAllEmployee();
@@ -54,6 +56,8 @@ namespace EmployeManagment.Controllers
         }
 
         [HttpGet]
+
+        //[Authorize] -- wymagaj zalogowania
         public ViewResult Create()
         {
             return View();

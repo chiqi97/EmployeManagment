@@ -1,9 +1,11 @@
 ﻿using EmployeManagment.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,11 +38,45 @@ namespace EmployeManagment
             services.AddDbContextPool<AppDbContext>(
              options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
 
-            // identity service
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                    .AddEntityFrameworkStores<AppDbContext>();
+            // identity service  związane z uzytkownikiem 
+            // options to modyfikacja 
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 10;
+                options.Password.RequiredUniqueChars = 3;
+                options.Password.RequireNonAlphanumeric = false;
+            }).AddEntityFrameworkStores<AppDbContext>();
 
-            services.AddMvcCore(options=>options.EnableEndpointRouting=false).AddXmlSerializerFormatters();
+
+            // Mozna tak zmienic wlasciwosci identity usr w moim przypadku to jest w rejestracji uzytkownika
+
+
+            //services.Configure<IdentityOptions>(options =>
+            //{
+            //    options.Password.RequiredLength = 10;
+            //    options.Password.RequiredUniqueChars=3;
+            //    options.Password.RequireNonAlphanumeric = false;
+            //})
+
+
+
+            services.AddMvc(config => {
+                var policy = new AuthorizationPolicyBuilder()
+                                .RequireAuthenticatedUser()
+                                .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            });
+
+
+            //services.AddMvcCore(options=>options.EnableEndpointRouting=false,
+            //    config => {
+            //        var policy = new AuthorizationPolicyBuilder()
+            //                            .RequireAuthenticatedUser()
+            //                            .Build();
+            //        config.Filters.Add(new AuthorizeFilter(policy));
+            //    }
+                    
+            //        ).AddXmlSerializerFormatters();
 
             //Singleton Instancja obiektu tworzona tylko raz a potem pracujemy na tym samym obiekcie
             // Ilosc uzytkownikow dowolna
@@ -105,13 +141,38 @@ namespace EmployeManagment
             //AppDbContext dodac, ze wykorzystujemy base.onmodelCreating(modelBuilder) a kolejno mozemy dodac
             // migracje
             app.UseAuthentication();
-
+            app.UseAuthorization();
             // Domyslna sciezka taka jak dla komendy DefauultRoute przypisanie home i index wlacza domyslnie sciezke
             // Home/index po wlaczeniu programu
-            app.UseMvc(routes =>
+
+
+
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    // Require Authorization for all your Razor Pages
+            //    endpoints.MapRazorPages().RequireAuthorization();
+
+            //    // Default page
+            //    endpoints.MapControllerRoute(
+            //        name: "default",
+            //        pattern: "{controller=Home}/{action=Index}/{id?}");
+            //});
+
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                // Require Authorization for all your Razor Pages
+                endpoints.MapRazorPages().RequireAuthorization();
+
+                // Default page
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //app.UseMvc(routes =>
+            //{
+            //    routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            //});
 
             // Z tym ustawieniem mozemy ustawiac sciezke za pomoca [Route] w kontrolerze
             //app.UseMvc();
