@@ -76,10 +76,10 @@ namespace EmployeManagment.Controllers
                 if (result.Succeeded)
                 {
                     // return url jesli sie zalogujesz powroc do miejsca w ktorym poproszono cie o zalogowanie
-                    if (!string.IsNullOrEmpty(returnUrl))
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
                         return Redirect(returnUrl);
-                    }
+                    } 
                     else
                     {
                         return RedirectToAction("index", "home");
