@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity;
-@inject SignInManager<IdentityUser> signInManager;
+@inject SignInManager<ApplicationUser> signInManager;
 
 <!DOCTYPE html>
 
@@ -13,7 +13,7 @@
         <script src="~/lib/jquery/jquery.js"></script>
         <script src="~/lib/jquery-validate/jquery.validate.js"></script>
         <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
-        <script src="~/lib/bootstrap/js/bootstrap.js"></script>
+        <script src="~/lib/bootstrap/js/bootstrap.js"></script> 
     </environment>
 
     @*Jesli asp enivroment inne niz development to zaladuj bootstrapa ze strony, jesli nie 

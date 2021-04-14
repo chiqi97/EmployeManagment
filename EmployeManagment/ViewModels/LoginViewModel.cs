@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmployeManagment.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace EmployeManagment.ViewModels
     {
         [Required]
         [EmailAddress]
+
         public string Email { get; set; }
         [Required]
         [DataType(DataType.Password)]

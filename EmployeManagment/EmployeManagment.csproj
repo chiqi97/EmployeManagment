@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Utilities\ValidEmailDomainAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\images\1.jpg" />
     <None Include="wwwroot\images\2.jpg" />
     <None Include="wwwroot\images\3.jpeg" />

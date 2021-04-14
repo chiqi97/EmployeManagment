@@ -40,7 +40,7 @@ namespace EmployeManagment
 
             // identity service  związane z uzytkownikiem 
             // options to modyfikacja 
-            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 10;
                 options.Password.RequiredUniqueChars = 3;
