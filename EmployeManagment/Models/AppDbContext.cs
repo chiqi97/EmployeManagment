@@ -21,6 +21,11 @@ namespace EmployeManagment.Models
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Seed();
+            // Ustaw foreignKey nie mozna usunac zadnej roli jesli jest przypisana do uzytkownika
+            foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+            }
         }
 
     }
