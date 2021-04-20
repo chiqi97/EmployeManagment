@@ -1,4 +1,5 @@
 ﻿using EmployeManagment.Models;
+using EmployeManagment.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -67,6 +68,42 @@ namespace EmployeManagment
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
 
+            // Zmiana sciezki metody i widoku AccessDenied na Administration/AccessDenied(metode i widok przeniesc)
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = new PathString("/Administration/AccessDenied");
+            });
+
+            // Deklaracja dzialania Claimsow nalezy zaimplementowac rownuez przed metoda ktora chcemy chronic
+            // w tym wypadku administration/DeleteRole
+            // aby zadzialalo po zmianie claims dla danego uzytkownika nalezy go przelogowac
+            // aby usunac role oprocz roli admina uzytkownik musid posiadac rowniez claims delete Role
+            services.AddAuthorization(options =>
+            {
+            // mozesz usuwac jesli jestes adminem i masz claim delete role
+            // lub jesli jestes super adminem
+            options.AddPolicy("DeleteRolePolicy", policy => policy.RequireAssertion(context =>
+           context.User.IsInRole("Admin") &&
+           context.User.HasClaim(claim => claim.Type == "Delete Role" && claim.Value == "true") ||
+           context.User.IsInRole("Super Admin")
+           ));
+
+                //options.AddPolicy("EditRolePolicy", policy => policy.RequireAssertion(context=>
+                //context.User.IsInRole("Admin") &&
+                //context.User.HasClaim(claim=>claim.Type=="Edit Role" &&claim.Value=="true" )||
+                //context.User.IsInRole("Super Admin")
+                //)); 
+
+                // Z nasza wlasna modyfikacja
+                options.AddPolicy("EditRolePolicy", policy =>
+                        policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement()));
+
+                // litery claim.value true musza byc takie same jak w bazie
+                // claim type nie jest wrazliwy 
+
+                options.AddPolicy("AdminRolePolicy", policy => policy
+                .RequireRole("Admin", "true"));
+            });
 
             //services.AddMvcCore(options=>options.EnableEndpointRouting=false,
             //    config => {
@@ -75,7 +112,7 @@ namespace EmployeManagment
             //                            .Build();
             //        config.Filters.Add(new AuthorizeFilter(policy));
             //    }
-                    
+
             //        ).AddXmlSerializerFormatters();
 
             //Singleton Instancja obiektu tworzona tylko raz a potem pracujemy na tym samym obiekcie
@@ -87,6 +124,10 @@ namespace EmployeManagment
             //zadania stworzy jednak nowy obiekt
             //obiekt (max 4, potem sie zeruje) przyklad z filmu
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
+
+            // deklaracja do policy
+
+            services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
 
             //nowy obiekt jest tworzony zawsze kiedy zostaje wysylane zapytanie http(zawsze 3)
             //services.AddTransient<IEmployeeRepository, SQLEmployeeRepository>();

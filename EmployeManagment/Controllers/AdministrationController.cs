@@ -16,8 +16,9 @@ using System.Threading.Tasks;
 namespace EmployeManagment.Controllers
 {
     //[Authorize(Roles="Admin, User")] // admin lub user
-    [Authorize(Roles = "Admin")] // tlko admin 
+    //[Authorize(Roles = "Admin")] // tlko admin 
     //[Authorize(Roles="User")] //tylko  user
+    [Authorize(Policy = "AdminRolePolicy")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
@@ -75,6 +76,7 @@ namespace EmployeManagment.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> EditRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -248,7 +250,7 @@ namespace EmployeManagment.Controllers
                 Id = user.Id,
                 UserName = user.UserName,
                 City = user.City,
-                Claims = userClaims.Select(c => c.Value).ToList(),
+                Claims = userClaims.Select(c => c.Type +  " : " + c.Value).ToList(),
                 Roles = userRoles
 
                 
@@ -323,6 +325,7 @@ namespace EmployeManagment.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "DeleteRolePolicy")]
         public async Task<IActionResult> DeleteRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);
@@ -368,6 +371,7 @@ namespace EmployeManagment.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRole(string userId)
         {
             ViewBag.userId = userId;
@@ -379,7 +383,7 @@ namespace EmployeManagment.Controllers
             }
 
 
-
+             
             List<UserRolesViewModel> model = new List<UserRolesViewModel>();
             var userRoles = await userManager.GetRolesAsync(user); // pobierz wszystkie role do ktorych nalezy danyc uzytkownik
 
@@ -406,6 +410,7 @@ namespace EmployeManagment.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRole(List<UserRolesViewModel> model, string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
@@ -471,7 +476,7 @@ namespace EmployeManagment.Controllers
                     ClaimType = claim.Type
                 };
                 //jezeli aktywny claim jest rowny temu z aktualnej iteracji zmien na true
-                if (existingUserClaims.Any(c => c.Type == claim.Type))
+                if (existingUserClaims.Any(c => c.Type == claim.Type && c.Value=="true"))
                 {
                     userClaim.IsSelected = true;
                 }
@@ -485,36 +490,42 @@ namespace EmployeManagment.Controllers
         {
             var user = await userManager.FindByIdAsync(model.UserId);
 
-            if (user==null)
+            if (user == null)
             {
                 ViewBag.ErrorMessage = $"User with Id = {model.UserId} cannot be found";
                 return View("NotFound");
             }
 
+            // Get all the user existing claims and delete them
             var claims = await userManager.GetClaimsAsync(user);
             var result = await userManager.RemoveClaimsAsync(user, claims);
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Cannot remove user existing claims!");
+                ModelState.AddModelError("", "Cannot remove user existing claims");
                 return View(model);
             }
 
+            // Add all the claims that are selected on the UI
+            result = await userManager.AddClaimsAsync(user,
+                model.Claims.Select(c => new Claim(c.ClaimType, c.IsSelected ? "true" : "false")));
 
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Cannot add selected claims to user");
+                return View(model);
+            }
 
-
-
-            //IList<string> a = (IList<string>)model.Claims.Where(c => c.IsSelected)
-            //                                .Select(c => new Claim(c.ClaimType, c.ClaimType)).ToList();
-
-            //for (int i = 0; i < a.Count; i++)
-            //{
-            //    result = await userManager.AddClaimAsync(user, a[i]);
-            //}
+            return RedirectToAction("EditUser", new { Id = model.UserId });
 
         }
 
-
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
 
 
     }
