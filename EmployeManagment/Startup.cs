@@ -68,6 +68,15 @@ namespace EmployeManagment
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
 
+            // zeby dodac autenttkacje google nalezy dodac paczke authentication.google
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = "1063636099489-cln1coujusdb1vd55biq9koqba9iod07.apps.googleusercontent.com";
+                    options.ClientSecret = "-Q7msf37CW71dahy5zb2BqJf";
+                });
+
+
             // Zmiana sciezki metody i widoku AccessDenied na Administration/AccessDenied(metode i widok przeniesc)
             services.ConfigureApplicationCookie(options =>
             {
@@ -98,6 +107,8 @@ namespace EmployeManagment
                 options.AddPolicy("EditRolePolicy", policy =>
                         policy.AddRequirements(new ManageAdminRolesAndClaimsRequirement()));
 
+                //options.InvokeHandlersAfterFailure = false;
+
                 // litery claim.value true musza byc takie same jak w bazie
                 // claim type nie jest wrazliwy 
 
@@ -125,9 +136,11 @@ namespace EmployeManagment
             //obiekt (max 4, potem sie zeruje) przyklad z filmu
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
 
-            // deklaracja do policy
+            // deklaracja do policy, rejestracja Security
 
             services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
+            services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>(); 
+            
 
             //nowy obiekt jest tworzony zawsze kiedy zostaje wysylane zapytanie http(zawsze 3)
             //services.AddTransient<IEmployeeRepository, SQLEmployeeRepository>();

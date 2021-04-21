@@ -18,7 +18,7 @@ namespace EmployeManagment.Controllers
     //[Authorize(Roles="Admin, User")] // admin lub user
     //[Authorize(Roles = "Admin")] // tlko admin 
     //[Authorize(Roles="User")] //tylko  user
-    [Authorize(Policy = "AdminRolePolicy")]
+    //[Authorize(Policy = "AdminRolePolicy")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;

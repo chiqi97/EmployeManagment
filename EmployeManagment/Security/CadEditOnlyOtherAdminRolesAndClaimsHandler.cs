@@ -35,6 +35,14 @@ namespace EmployeManagment.Security
             {
                 context.Succeed(requirement);
             }
+            // Jesli w pierwszym handlerze wyrzuci falsz to drugi sie nie wlaczy 
+            // Jesli chcemy zeby sprawdzono drugi nie powinnismy dawac opcji wyrzucenia falszu
+            // Jesli chceny zeby po falszu w pierwszym handlerze po context.Fail zostal
+            // sprawdzany nalezy w startupie InvokeHandlerAfterFailure ustawic na false
+            //else
+            //{
+            //    context.Fail();
+            //}
 
             return Task.CompletedTask;
         }
