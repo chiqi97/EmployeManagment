@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
@@ -9,30 +10,34 @@ using System.Threading.Tasks;
 namespace EmployeManagment.Security
 {
     public class CanEditOnlyOtherAdminRolesAndClaimsHandler :
-    AuthorizationHandler<ManageAdminRolesAndClaimsRequirement>
+                AuthorizationHandler<ManageAdminRolesAndClaimsRequirement>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-            ManageAdminRolesAndClaimsRequirement requirement)
+        private readonly IHttpContextAccessor httpContextAccessor;
+        public CanEditOnlyOtherAdminRolesAndClaimsHandler(
+                IHttpContextAccessor httpContextAccessor)
         {
-            var authFilterContext = context.Resource as AuthorizationFilterContext;
-            if (authFilterContext == null)
-            {
-                return Task.CompletedTask;
-            }
+            this.httpContextAccessor = httpContextAccessor;
+        }
 
-            string loggedInAdminId =
-                context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+                ManageAdminRolesAndClaimsRequirement requirement)
+        {
 
-            string adminIdBeingEdited = authFilterContext.HttpContext.Request.Query["userId"];
+            var loggedInAdminId = context.User.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value.ToString();
 
-            if (context.User.IsInRole("Admin") &&
-                context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == "true") &&
-                adminIdBeingEdited.ToLower() != loggedInAdminId.ToLower())
+            var adminIdBeingEdited = httpContextAccessor.HttpContext
+                .Request.Query["userId"].ToString();
+
+            if (context.User.IsInRole("Admin")
+                 && context.User.HasClaim(c => c.Type == "Edit Role" && c.Value == "true")
+                 && adminIdBeingEdited.ToLower() != loggedInAdminId.ToLower())
             {
                 context.Succeed(requirement);
             }
 
             return Task.CompletedTask;
         }
+
     }
 }
