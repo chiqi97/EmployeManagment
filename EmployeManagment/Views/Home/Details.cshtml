@@ -24,10 +24,11 @@
                 <a asp-controller="home" asp-action="index" class="btn btn-primary">Back</a>
                 <a asp-controller="home" asp-action="edit" asp-route-id="@Model.Employee.Id"
                    class="btn btn-primary m-1">Edit</a>
+
                 <form asp-controller="home" asp-action="delete"
-                      asp-route-id="@Model.Employee.Id"  method="get">
+                      asp-route-id="@Model.Employee.Id" method="get">
                     <!--potwieerdzenie usuniecia w okienku onclick
-        onclick="return confirm('Are you sure you want to delete user: parametre')  -->
+                    onclick="return confirm('Are you sure you want to delete user: parametre')  -->
                     <span id="confirmDeleteSpan_@Model.Employee.Id" style="display:none">
                         <span>Are you sure you want to delete?</span>
                         <button class="btn btn-danger" type="submit">Yes</button>
@@ -35,7 +36,7 @@
                            onclick="confirmDelete('@Model.Employee.Id', false)">No</a>
                     </span>
 
-                    <span id="deleteSpan_@@Model.Employee.Id">
+                    <span id="deleteSpan_@Model.Employee.Id">
                         <a class="btn btn-danger"
                            onclick="confirmDelete('@Model.Employee.Id', true)">Delete</a>
                     </span>
@@ -44,3 +45,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts{
+    <script src="~/js/CustomScript.js"></script>
+} 
