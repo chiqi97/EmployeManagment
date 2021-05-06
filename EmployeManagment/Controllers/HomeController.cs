@@ -141,13 +141,11 @@ namespace EmployeManagment.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        [HttpGet]
+        public  ViewResult Delete(int id)
         {
-
-
             _employeeRepository.Delete(id);
-            return View();
+            return View("deleted");
         }
 
         private string ProcessUploadedFile(EmployeeCreateViewModel model)
