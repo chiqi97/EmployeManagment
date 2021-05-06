@@ -4,6 +4,16 @@
     ViewBag.Title = "Employee List";
 }
 
+<div class="input-group">
+    @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+    {
+        <b>Search by:</b>
+        @Html.RadioButton("searchBy", "Name", true)<text>Name</text>
+        @Html.RadioButton("searchBy", "Department", true)<text>Department</text>
+        <br />
+        @Html.TextBox("search")<input class="btn btn-dark" type="submit" value="Search" />
+    }
+</div>
 
 <div class="card-deck">
     @foreach (var employee in Model)

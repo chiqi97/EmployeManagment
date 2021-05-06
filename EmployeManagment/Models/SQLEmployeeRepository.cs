@@ -41,6 +41,19 @@ namespace EmployeManagment.Models
             return context.Employees.Find(Id);
         }
 
+        public IEnumerable<Employee> GetEmployeeByName(string name)
+        {
+
+                return context.Employees.Where(x => x.Name.StartsWith(name) || name == null);
+
+        }
+        public IEnumerable<Employee> GetEmployeeByDepartment(string department)
+        {
+
+            return context.Employees.Where(x => x.Department == GetEnum<Dept>(department.ToUpper()) || department == null);
+        }
+
+  
 
         public Employee Update(Employee employeeChanges)
         {
@@ -49,6 +62,13 @@ namespace EmployeManagment.Models
             context.SaveChanges();
             return employeeChanges;
            
+        }
+
+        private static TEnum? GetEnum<TEnum>(string value) where TEnum : struct
+        {
+            TEnum result;
+
+            return Enum.TryParse<TEnum>(value, out result) ? (TEnum?)result : null;
         }
     }
 }

@@ -26,8 +26,18 @@ namespace EmployeManagment.Controllers
             _employeeRepository = employeeRepository;
         }
         [AllowAnonymous] // pozwol uzytkownikom niezalogowanym
-        public ViewResult Index()
+        public ViewResult Index(string searchBy, string search)
         {
+            if (searchBy == "Name")
+            {
+                var modelByName = _employeeRepository.GetEmployeeByName(search);
+                return View(modelByName);
+            }
+            else if(searchBy== "Department")
+            {
+                var modelByDepartment = _employeeRepository.GetEmployeeByDepartment(search);
+                return View(modelByDepartment);
+            }
             var model = _employeeRepository.GetAllEmployee();
             return View(model);
         }
@@ -131,6 +141,15 @@ namespace EmployeManagment.Controllers
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+
+
+            _employeeRepository.Delete(id);
+            return View();
+        }
+
         private string ProcessUploadedFile(EmployeeCreateViewModel model)
         {
             string uniqueFileName = null;
@@ -154,6 +173,8 @@ namespace EmployeManagment.Controllers
             return uniqueFileName;
             
         }
+
+
 
     }
 }

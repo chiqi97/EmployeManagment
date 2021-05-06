@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EmployeManagment.Models
 {
-    public class MockEmployeeRepository : IEmployeeRepository
+    public class MockEmployeeRepository 
     {
         private List<Employee> _employeeList;
 
@@ -42,9 +42,15 @@ namespace EmployeManagment.Models
             return _employeeList; 
         }
 
+
         public Employee GetEmployee(int Id)
         {
             return _employeeList.FirstOrDefault(e => e.Id == Id);
+        }
+
+        public IEnumerable<Employee> GetEmployeeByName(string name)
+        {
+            throw new NotImplementedException();
         }
 
         public Employee Update(Employee employeeChanges)
