@@ -49,8 +49,12 @@ namespace EmployeManagment.Models
         }
         public IEnumerable<Employee> GetEmployeeByDepartment(string department)
         {
-
-            return context.Employees.Where(x => x.Department == GetEnum<Dept>(department.ToUpper()) || department == null);
+            if (department != null)
+            {
+                return context.Employees.Where(x => x.Department == GetEnum<Dept>(department.ToUpper()) || department == null);
+            }
+            return context.Employees;
+           
         }
 
   

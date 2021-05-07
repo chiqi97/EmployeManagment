@@ -7,9 +7,9 @@ namespace EmployeManagment.Models
 {
     public enum Dept
     {
-        None,
+        NONE,
         HR,
         IT,
-        Payroll
+        PAYROLL
     }
 }
