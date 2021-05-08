@@ -32,7 +32,7 @@
 
 
                 <form asp-action="DeleteRole" asp-route-id="@role.Id" method="post">
-                    <!--potwieerdzenie usuniecia w okienku onclick
+                    <!--potwierdzenie usuniecia w okienku onclick
                     onclick="return confirm('Are you sure you want to delete user: parametre')  -->
                     @if ((await authorizationService.AuthorizeAsync(User, "EditRolePolicy")).Succeeded)
                     {
@@ -48,7 +48,7 @@
                            onclick="confirmDelete('@role.Id', false)">No</a>
                     </span>
 
-                    <!-- sprawdz czy uzytkownik ma claim do usuwania rol -->
+                    <!-- sprawdz czy uzytkownik ma żądanie do usuwania rol -->
                     @if ((await authorizationService.AuthorizeAsync(User, "DeleteRolePolicy")).Succeeded)
                     {
                         <span id="deleteSpan_@role.Id">

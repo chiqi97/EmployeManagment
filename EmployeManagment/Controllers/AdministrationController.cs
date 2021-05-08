@@ -49,13 +49,13 @@ namespace EmployeManagment.Controllers
                 {
                     Name = model.RoleName
                 };
-                IdentityResult result = await roleManager.CreateAsync(identityRole); //zapis do bazy danych
+                IdentityResult result = await roleManager.CreateAsync(identityRole); //zapisz do bazy danych
 
                 if (result.Succeeded)
                 {
                     return RedirectToAction("listroles", "administration");
                 }
-                // jesli result nie powiodl sie
+                // jesli zapis sie nie powiedzie
 
                 foreach (IdentityError   error in result.Errors)
                 {
@@ -116,7 +116,7 @@ namespace EmployeManagment.Controllers
             {
                 role.Name = model.RoleName;
 
-                // Update the Role using UpdateAsync
+                // zaaktualizuj role
                 var result = await roleManager.UpdateAsync(role);
 
                 if (result.Succeeded)
@@ -156,7 +156,7 @@ namespace EmployeManagment.Controllers
                     UserId = user.Id,
                     UserName = user.UserName
                 };
-                // sprawdz czy user jest w daneh roli jesli tak wybrany zmien na true
+                // sprawdz czy user jest w danej roli, jesli tak  zmien na true
                 if(await userManager.IsInRoleAsync(user, role.Name))
                 {
                     userRoleViewModel.IsSelected = true;

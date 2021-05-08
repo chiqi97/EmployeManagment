@@ -61,8 +61,8 @@ namespace EmployeManagment.Controllers
 
             //ViewBag.PageTitle = "Employee Details";
 
-            return View(homeDetailsViewMode); // Regular solution - the same name as the action method
-            //return View("MyViews/Test.cshtml"); // Solution with source 
+            return View(homeDetailsViewMode); // podstawowe rozwiazanie - nazwa taka jak akcja
+            //return View("MyViews/Test.cshtml"); // Rozwiazanie z konkretna sciezka
         }
 
         [HttpGet]
@@ -84,8 +84,8 @@ namespace EmployeManagment.Controllers
                     Name = model.Name,
                     Email = model.Email,
                     Department = model.Department,
-                    // Store the file name in PhotoPath property of the employee object
-                    // which gets saved to the Employees database table
+                    // zapisz nazwe pliku  obiektu pracownika
+                    // ktory zostanie zapisany w bazie danych pracownikow
                     PhotoPath = uniqueFileName
                 };
 

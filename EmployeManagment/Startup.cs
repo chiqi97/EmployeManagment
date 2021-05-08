@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-//sd
+
 namespace EmployeManagment
 {
     public class Startup
@@ -39,8 +39,8 @@ namespace EmployeManagment
             services.AddDbContextPool<AppDbContext>(
              options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection")));
 
-            // identity service  związane z uzytkownikiem 
-            // options to modyfikacja 
+            // identity service  związane z uzytkownikiem, w tym przypadku 
+            // za pomoca options.password edytujemy wymagania dotyczace hasla
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 5;
@@ -48,16 +48,6 @@ namespace EmployeManagment
                 options.Password.RequireNonAlphanumeric = false;
             }).AddEntityFrameworkStores<AppDbContext>();
 
-
-            // Mozna tak zmienic wlasciwosci identity usr w moim przypadku to jest w rejestracji uzytkownika
-
-
-            //services.Configure<IdentityOptions>(options =>
-            //{
-            //    options.Password.RequiredLength = 10;
-            //    options.Password.RequiredUniqueChars=3;
-            //    options.Password.RequireNonAlphanumeric = false;
-            //})
 
 
 
@@ -77,19 +67,20 @@ namespace EmployeManagment
                 });
 
 
-            // Zmiana sciezki metody i widoku AccessDenied na Administration/AccessDenied(metode i widok przeniesc)
+            // Zmiana sciezki metody i widoku AccessDenied na 
+            //Administration/AccessDenied(metode i widok przeniesc)
             services.ConfigureApplicationCookie(options =>
             {
                 options.AccessDeniedPath = new PathString("/Administration/AccessDenied");
             });
 
-            // Deklaracja dzialania Claimsow nalezy zaimplementowac rownuez przed metoda ktora chcemy chronic
+            // Deklaracja dzialania zadan nalezy zaimplementowac rowniez przed metoda ktora chcemy chronic
             // w tym wypadku administration/DeleteRole
-            // aby zadzialalo po zmianie claims dla danego uzytkownika nalezy go przelogowac
-            // aby usunac role oprocz roli admina uzytkownik musid posiadac rowniez claims delete Role
+            // aby zadzialalo po zmianie zadania dla danego uzytkownika nalezy go przelogowac
+         
             services.AddAuthorization(options =>
             {
-            // mozesz usuwac jesli jestes adminem i masz claim delete role
+            // mozesz usuwac jesli jestes adminem i masz dostep do zadania: delete role
             // lub jesli jestes super adminem
             options.AddPolicy("DeleteRolePolicy", policy => policy.RequireAssertion(context =>
            context.User.IsInRole("Admin") &&
@@ -109,31 +100,24 @@ namespace EmployeManagment
 
                 //options.InvokeHandlersAfterFailure = false;
 
-                // litery claim.value true musza byc takie same jak w bazie
-                // claim type nie jest wrazliwy 
+                // litery claim.value true musza byc takie same jak w bazie, jest to bardzo wrazliwe
+                // claim type nie jest wrazliwy
 
                 options.AddPolicy("AdminRolePolicy", policy => policy
                 .RequireRole("Admin", "true"));
             });
 
-            //services.AddMvcCore(options=>options.EnableEndpointRouting=false,
-            //    config => {
-            //        var policy = new AuthorizationPolicyBuilder()
-            //                            .RequireAuthenticatedUser()
-            //                            .Build();
-            //        config.Filters.Add(new AuthorizeFilter(policy));
-            //    }
 
-            //        ).AddXmlSerializerFormatters();
+            //Singleton Instancja obiektu tworzona tylko raz, a potem wykorzystywana wiele razy przy kazdym
+            //zapytaniu.
 
-            //Singleton Instancja obiektu tworzona tylko raz a potem pracujemy na tym samym obiekcie
-            // Ilosc uzytkownikow dowolna
-            //services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
 
-            // Instancja tworzona raz na zadanie w tym zakresie  jak singleton w jednym zakresie.
-            // Tworzy jeden obiekt dla  żądania http i uzywa go do w innych wywolaniach, nastepne wyslanie
-            //zadania stworzy jednak nowy obiekt
-            //obiekt (max 4, potem sie zeruje) przyklad z filmu
+            // Scoped - mamy ta sama instancje dla danego zapytania, ale dla innego zapytania mamy nowa instancje
+
+            // Transient - nowa instancja tworzona jest za kazdym razem podczas wywolania zapytania 
+            // nawet dla tego samego zapytania lub oczywiscie innego zapytania
+
+
             services.AddScoped<IEmployeeRepository, SQLEmployeeRepository>();
 
             // deklaracja do policy, rejestracja Security
@@ -142,8 +126,7 @@ namespace EmployeManagment
             services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>(); 
             
 
-            //nowy obiekt jest tworzony zawsze kiedy zostaje wysylane zapytanie http(zawsze 3)
-            //services.AddTransient<IEmployeeRepository, SQLEmployeeRepository>();
+
 
             services.AddControllersWithViews(); // for views 
         }
@@ -153,11 +136,7 @@ namespace EmployeManagment
         {
             if (env.IsDevelopment())
             {
-                //// option of exception page 5 lines up 
-                //DeveloperExceptionPageOptions developerExceptionPageOptions = new DeveloperExceptionPageOptions
-                //{
-                //    SourceCodeLineCount = 10
-                //};
+
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -169,85 +148,50 @@ namespace EmployeManagment
                 
 
 
-            //change name of default page
+            //zmien domyslna nazwe strony
             //DefaultFilesOptions defaultFileOptions = new DefaultFilesOptions();
             //defaultFileOptions.DefaultFileNames.Clear();
             //defaultFileOptions.DefaultFileNames.Add("foo.html");
 
-            ////set a default.html as a main page
+            ////ustaw default.html jako domyslna strone
             //app.UseDefaultFiles(defaultFileOptions);
             //app.UseStaticFiles();
 
-            //better way to set the foo.html as main page   
+            //lepsze rozwiazanie do ustawienia foo.html jako glowna strone 
             //FileServerOptions fileServerOptions = new FileServerOptions();
             //fileServerOptions.DefaultFilesOptions.DefaultFileNames.Clear();
             //fileServerOptions.DefaultFilesOptions.DefaultFileNames.Add("foo.html");
             //app.UseFileServer(fileServerOptions);
 
             // app.UseFileServer();
+
             app.UseStaticFiles();
             app.UseRouting();
 
-            // konfiguruje domyslna sciezke czyli HomeController i metoda details > /home/details
-            //  app.UseMvcWithDefaultRoute();
 
-            //Autthentication middleware, koniecznie przed mvc, nalezy pierw w metodzie on modelCreating w 
+
+            //Autthentication middleware, koniecznie przed mvc, nalezy najpierw w metodzie on modelCreating w 
             //AppDbContext dodac, ze wykorzystujemy base.onmodelCreating(modelBuilder) a kolejno mozemy dodac
             // migracje
             app.UseAuthentication();
             app.UseAuthorization();
-            // Domyslna sciezka taka jak dla komendy DefauultRoute przypisanie home i index wlacza domyslnie sciezke
-            // Home/index po wlaczeniu programu
 
 
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    // Require Authorization for all your Razor Pages
-            //    endpoints.MapRazorPages().RequireAuthorization();
 
-            //    // Default page
-            //    endpoints.MapControllerRoute(
-            //        name: "default",
-            //        pattern: "{controller=Home}/{action=Index}/{id?}");
-            //});
+
 
             app.UseEndpoints(endpoints =>
             {
-                // Require Authorization for all your Razor Pages
+                // wymagaj autoryzacji dla wszystkich stron
                 endpoints.MapRazorPages().RequireAuthorization();
 
-                // Default page
+                // domyslna strona
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            //});
-
-            // Z tym ustawieniem mozemy ustawiac sciezke za pomoca [Route] w kontrolerze
-            //app.UseMvc();
-
-
-            //app.Run(async (context) =>
-
-            //{
-            //    await context.Response.WriteAsync("hello world");
-            //});
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapGet("/", async context =>
-            //    {
-
-            //        await context.Response.WriteAsync("hello world");
-
-            //    });
-
-            //});
 
 
         }
